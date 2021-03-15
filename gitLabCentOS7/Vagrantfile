@@ -1,0 +1,28 @@
+Vagrant.configure("2") do |config|  
+  config.vm.network "public_network", ip: "192.168.100.113"
+  #config.vm.network "public_network", bridge: "eth0: Intel Pro/1000 MT Desktop (82540EM)"
+  config.vm.box = "centos/7"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "4096"
+    vb.cpus = 4
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    yum -y update
+    yum install -y curl policycoreutils-python openssh-server perl
+    setenforce 0
+    systemctl enable sshd
+    systemctl start sshd
+    firewall-cmd --permanent --add-service=http
+    firewall-cmd --permanent --add-service=https
+    systemctl reload firewalld
+    
+    yum install postfix
+    systemctl enable postfix
+    systemctl start postfix
+
+    curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+    
+    EXTERNAL_URL="https://gitlab.linux.local" yum install -y gitlab-ce
+  SHELL
+end

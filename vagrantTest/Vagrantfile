@@ -1,0 +1,12 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/bionic64"
+  
+#  $script = <<-SCRIPT
+#	sudo apt update &&
+#	sudo apt upgrade -y &&
+#	sudo apt install mc -y
+#  SCRIPT
+  
+#  config.vm.provision "shell", inline: $script
+  config.vm.provision "shell", path: "scripts/update_upgrade_mc.sh"
+end
